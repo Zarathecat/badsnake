@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cehq7g6upquki"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_mm51r"]
+size = Vector2(10, 10)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_r07kd"]
+radius = 4.10577
+
+[node name="Segment" type="Area2D"]
+position = Vector2(145, 28)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.172549, 1, 1, 1)
+texture = SubResource("PlaceholderTexture2D_mm51r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1, 1.08)
+shape = SubResource("CircleShape2D_r07kd")

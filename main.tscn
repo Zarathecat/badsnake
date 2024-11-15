@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://cdc01awn2mvdb"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_6wsbv"]
+[ext_resource type="PackedScene" uid="uid://bdo1b4k5x7ugk" path="res://food.tscn" id="2_6b8jg"]
+[ext_resource type="PackedScene" uid="uid://cehq7g6upquki" path="res://segment.tscn" id="2_yjprj"]
+[ext_resource type="PackedScene" uid="uid://bfu5hsndt7v6a" path="res://head.tscn" id="4_qd7gk"]
+[ext_resource type="Script" path="res://head.gd" id="5_lohqq"]
+[ext_resource type="AudioStream" uid="uid://c41kadt706p0w" path="res://art/snakedeath.ogg" id="6_p4tq1"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_6wsbv")
+food_scene = ExtResource("2_6b8jg")
+segment_scene = ExtResource("2_yjprj")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.206383, 0.0569695, 0.184505, 1)
+
+[node name="Food" parent="." instance=ExtResource("2_6b8jg")]
+
+[node name="Segment" parent="." instance=ExtResource("2_yjprj")]
+position = Vector2(133, 49)
+
+[node name="Head" parent="." instance=ExtResource("4_qd7gk")]
+script = ExtResource("5_lohqq")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Bgm" type="AudioStreamPlayer" parent="."]
+
+[node name="Deathsound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_p4tq1")
+
+[connection signal="area_entered" from="Food" to="." method="_on_food_area_entered" flags=3]
+[connection signal="area_shape_entered" from="Food" to="." method="_on_food_area_shape_entered"]
+[connection signal="area_entered" from="Head" to="." method="_on_head_area_entered"]
