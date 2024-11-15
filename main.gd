@@ -60,9 +60,12 @@ func _process(delta: float) -> void:
 	# because otherwise, the snake would have multiple segments at the same
 	# coordinate, so it would look like it had shrunk. This isn't as visible
 	# on implementations where the snake is always moving, but is visible if
-	# the player can stop the snake.
-	# You could use that as a gameplay mechanic, if
-	# you wanted, but I don't want.
+	# the player can stop the snake. You could use that as a gameplay mechanic,
+	# if you wanted, but I don't want.
+	# So usually, it adds a new pair of coordinates to the end of the array,
+	# and removes the oldest pair from the start. Unless it has just eaten
+	# some food! Then, it adds a new pair to the end, but also keeps the oldest
+	# pair. It then sets a flag, so that it only grows once per food item.
 	# First time it runs, put the head coord as only element in array
 	if snake_array == []:
 		snake_array.push_back($Head.position) # push_back == append
