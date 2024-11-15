@@ -100,7 +100,7 @@ func make_snake():
 		segments = seg_dup
 
 # Add a segment to the snake, and thus to the scene tree. Track it in the
-# list of segment nodes. The position here is it's starting position; after
+# list of segment nodes. The position here is its starting position; after
 # this one-off it will be set by the game loop. We give it a specific position
 # here so we 'grow' instantly and don't bump into it by accident, but since
 # apparently I ended up needing a bunch of hacky flags anyway, it
@@ -145,8 +145,8 @@ func make_food():
 	add_child(food)
 
 # queue_free() removes objects from memory. So this destroys all
-# snake segments. Should probably look into whether its wise to
-# use be using get_tree() in both the make and destroy functions;
+# snake segments. Should probably look into whether it's wise to
+# be using get_tree() in both the make and destroy functions;
 # maybe they can get out of step. Anyway. We also clear the array.
 func game_over():
 	if death_counter % 10 == 0:
