@@ -1,0 +1,76 @@
+DAY 2!
+
+Goals:
+  * get snake done
+  * read more
+  * maybe embellish snake
+
+By lunchtime on day 2, I had a playable, but rubbish, implementation of
+snake. The basic mechanics were there, but it was buggy. There was a mysterious
+hole in the snake, though at least that was only an aesthetic issue. More
+concerningly, the game sometimes thought you'd hit yourself when you hadn't.
+Given the whole point of snake is to not hit yourself, that gave the game
+a dispiriting degree of challenge.
+
+"Oh well, at least you have a game of snake you can play!"
+
+I already have a better game of snake I can play.
+
+"But this is one you wrote!"
+
+I wrote my other one. 8 years ago. ;_;
+
+All in all, this experience was pretty annoying. I did learn more about the
+engine and got a little more practice thinking in a more OOP style, though
+I'm now inclined to think arcade-style games like snake are actually better
+as massive single-page scripts of spaghetti code. :P I soon ended up changing
+my godot code from some fairly decoupled prettiness into a
+spaghetti of hacks, to improve the movement and work around some bugs, and
+while I'm sure it would've been possible to do in an OOP way, it would have
+taken me FOREVER. So, I lost any benefit of godot, and got a worse snake than
+I'd have got if I'd just used ascii in the terminal. On the whole, I write
+ python like it's C. Gdscript looks like python, but is based on C++.
+So I'm thinking in something approximating C, but writing in C++,
+by way of faux-python. This does not
+lead to nice code. 
+
+I also suspect that snake works better with an old-fashioned explicitly gridded
+approach (obviously the game screen is still gridded, but it's high-res, so
+it seems like you get diagonal movement. I don't think that suits snake; the
+squareness of the snake is a feature! That way you get hypnotic coils, more
+predictable movement, and fewer collision bugs). So, I think I should have
+superimposed a grid.
+
+I also think I used the wrong node for the snake, and I should have gone
+with CharacterBody2D. That would have let me care about the direction of
+collision, which might have improved things (since we should only care what
+the snake's 'nose' hits, not segments brushing the side of the snakehead's
+collision-detection rect because they've been coded badly, cough cough.) I
+used Area2D, instead, which I think caused me some bugs.
+
+Things I did learn... I got a lot clearer on instantiating nodes, grouping
+nodes, and accessing nodes by group. I think this will be really helpful later
+as I do more with godot. I got clearer on signals and how to connect things
+up. All in all, the learning-to-architect-applications side was a success,
+even if that's invisible in the code written so far. I still don't think I
+know how to do anything right yet, but I know more than I did. Still wrong,
+but less wrong.
+
+So, the output from day1-day2 was an abject failure, since I was supposed to
+end up with 2 solid games and I have one flakey game. But as a learning
+task, it went well, because I broke pretty much everything it was possible to
+break and made myself miserable. Through such brutal operant conditioning,
+I will improve my work.
+
+(Then cleaned up some bugs, made the code messier. It's more playable now, but
+it still errors out every once in a while, or wrongly thinks you've died. So
+still pretty rubbish. But better than it was. It now plays a sound when you
+die!)
+
+I was going to give it a nice menu and art, music and things, but I'll come
+back to that, because there's no point prettying up a buggy game. I'd
+rather spend that effort on something that's actually fun and doesn't
+decide to kill the player in a fit of caprice.
+
+Now I'm going to read the design patterns book for a bit, and reflect on the 
+many and varied ways in which my code falls short. :)

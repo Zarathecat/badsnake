@@ -1,0 +1,94 @@
+GODOT!
+
+DAY 1
+
+* Read some theory (didn't intend to, but got distracted by it, and it was fun!)
+
+* Clone the godot sample games and see what's possible.
+
+* Looked at Dodge The Creeps again to see the suggested way of doing the nodes.
+  Bit confusing, because the mob scene was imported. Anyway!
+
+We want a main node as the root. Then a colourrect for the bg (optional). There
+will be another canvaslayer, defined at the bottom, to use for score etc.
+We will also have a node for music that will autoload (audiostreamplayer)
+which will take an ogg vorbis file as input.
+And we'll have a node for a deathsound (also audiostreamplayer). so it's like
+a simplified dodge the creeps.
+
+Then we define an area2d, which holds a node for the appearance (eg:
+animatedshape2d) and a node for the collision (collisionshape2d). on the 
+latter, we set the shape to use. (for snake, will be a circle)
+
+This approach doesn't suit snake well so I'm wondering if there's a better
+way.
+
+we will also have an area2d+appearance node+ collision node for food. it's
+location will be randomised, and triggered whenever snake eats it. so it'll
+have an 'is_eaten' signal.
+
+maybe snake should emit is_eating, too. bit redundant but means snake handles
+its 'grow' logic while food handles its 'disappear and reappear' logic (or 
+Main handles that). I think it's neater that way.
+
+suspect one could hack GPUParticles2D, but that's messy.
+
+So, step 1: get a snake we can move around.
+
+did that, and got the logic for the array, and the collision detection...
+but couldn't figure out how to get the new segments of the array instantiated!
+or drawn to the screen... not without totally changing the approach and
+abandoning nodes altogether, anyway. I guess I'll come back to this one. bit
+of a downer.
+
+I think I need to treat each segment as a scene. Weird.
+and so the 'head' segment is a different type of scene to the others, because
+they don't take user input.
+though maybe they all just take pos() and then the head one is passed a
+different param.
+
+okay, I'm gonna start over since I can't face looking at v1. xD
+
+snake2 full snake consequences!
+aight so:
+main node
+  area2d
+    sprite2d
+    collisionshape2d
+  area2d
+    sprite2d
+    collisionshape2d
+  hud
+
+well, it's further. had some issues with getting the events to fire
+consistently and deleting objects at the right time and so on. but I've got
+a little box that moves around the screen eating food. hopefully it won't
+be too horrible to do the segments code tomorrow.
+
+writeup:
+
+DAY 1
+-----
+
+This was pretty aggravating. I started with snake, which was maybe a mistake.
+snake is easy enough when you're working with arrays and drawing things
+to the screen directly and dynamically, based on the code.
+godot abstracts more and is designed more for OOP.
+this makes snake harder to program, or it did for me, anyway. It took much
+longer than it took me with pygame. I had to think about splitting the snake
+out into separate 'scenes', and then instantiating them (the head ends up
+being a different kind of thing to the body!). I had to think
+more about when events would fire, and then debug when I got the connections
+wrong. I learned about exactly what I could and couldn't instantiate, 
+and about needing to set connections for signals upon instantiation, so
+hopefully I learned a lot, but it wasn't much fun. I didn't even get round
+to writing the logic for growing the snake. I worked it out, but didn't code
+it (I had a dummy array with the values changing correctly, but this
+couldn't be translated into objects on the screen, because I'd messed up my
+snake-architecture. I'm not thrilled that it needed architecting!).
+By the end of DAY 1, I had a blob I could move around the screen, another blob
+that sat there, and when the first blob hit the second, the second would
+disappear with an 'ate food!' message, and a new static blob would appear at
+a random position.
+Not quite snake. I said 'a game a day', but I'm going to get this working
+before I move on, because this is just embarassing.
