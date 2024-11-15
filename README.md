@@ -14,4 +14,11 @@ within the same paragraph.
 The code still has all the hacks, uncommented mysteries
 and commented-out-old-code left in there. I might clean it
 up, but maybe there's no point for this, and it's funnier to
-leave it as-is.
+leave it as-is... Yes, upon reading over and encountering
+the sheer beauty of `eat_flag`, I think this code is best
+left alone, for now, so that others can enjoy it.
+
+*I met a traveller from an antique land,
+Who said—“Two vast and trunkless legs of stone
+Stand in the desert. . . . Near them, on the sand,
+Half sunk a shattered `eat_flag` lies*
