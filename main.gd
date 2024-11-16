@@ -114,9 +114,12 @@ func make_food():
 	var food = food_scene.instantiate()
 	var potential_food_pos = Vector2(0,0)
 	# Hack. loop until get position not taken by snake
+	var seg_pos_array = []
+	for segment in segments:
+		seg_pos_array.append(segment.position)
 	while true:
 		potential_food_pos = get_random_position(window_size)
-		if potential_food_pos not in segments:
+		if potential_food_pos not in seg_pos_array:
 			break
 	food.position = potential_food_pos
 	food.area_entered.connect(_on_food_area_entered)
