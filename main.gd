@@ -22,10 +22,7 @@ var immortal_flag = false
 # Self-explanatory. Says it's time for the snake to die.
 var death_flag = false
 
-var segments
-
 @export var food_scene: PackedScene
-@export var head_scene: PackedScene # This isn't even used.
 @export var segment_scene: PackedScene
 
 # Called when the node enters the scene tree for the first time.
@@ -126,9 +123,7 @@ func make_food():
 	add_child(food)
 
 # queue_free() removes objects from memory. So this destroys all
-# snake segments. Should probably look into whether it's wise to
-# be using get_tree() in both the make and destroy functions;
-# maybe they can get out of step. Anyway. We set the snake to
+# snake segments. We set the snake to
 # reappear next round in the middle of the screen, and we stop
 # it from gliding until the player is ready to retry, via .last_dir
 # Some of this stuff needs splitting out and abstracting. Later!
@@ -147,10 +142,8 @@ func game_over():
 # immortal_flag is used here as a hack for turning off
 # collision-detection briefly, so the snake won't die if it's lunching.
 func _on_head_area_entered(area: Area2D) -> void:
-	if immortal_flag == true:
-		pass
-	else:
-		death_flag = true # moving death out of event
+	if immortal_flag == false:
+		death_flag = true
 		#print("I hit myself!") # debugging
 
 # We disable collision-detection so that the snake only eats one
