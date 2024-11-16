@@ -79,7 +79,7 @@ func _process(delta: float) -> void:
 
 # Check if snake hit wall
 func check_snake(a, b):
-	if a == 500 or a == 0 or b == 500 or b == 0:
+	if a == window_size.x or a == 0 or b == window_size.y or b == 0:
 		print("hit wall!")
 		death_flag = true
 	
