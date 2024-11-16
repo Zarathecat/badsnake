@@ -2,13 +2,6 @@ extends Node
 
 var score = 0
 
-# hack because we start off with a game over
-# we will use this to avoid playing the deathsound right at
-# the start of the game. it also means it doesn't attempt to
-# make 1 sound per frame when we die, so accidentally
-# ends up sounding better.
-var death_counter = 1
-
 var window_size = DisplayServer.window_get_size()
 
 # food_flag is used to track whether we need to make food.
@@ -82,8 +75,6 @@ func _process(delta: float) -> void:
 			#print(segments[i].position)#debug
 			segments[i].position = segments[i+1].position
 		segments[-1].position = $Head.position
-	else:
-		pass
 	check_snake($Head.position[0], $Head.position[1])
 	if death_flag == true:
 		print("I hit something!")
@@ -137,12 +128,12 @@ func make_food():
 # queue_free() removes objects from memory. So this destroys all
 # snake segments. Should probably look into whether it's wise to
 # be using get_tree() in both the make and destroy functions;
-# maybe they can get out of step. Anyway. We also clear the array.
+# maybe they can get out of step. Anyway. We set the snake to
+# reappear next round in the middle of the screen, and we stop
+# it from gliding until the player is ready to retry, via .last_dir
 # Some of this stuff needs splitting out and abstracting. Later!
-func game_over():
-	if death_counter % 10 == 0:
-		$Deathsound.play()
-	death_counter += 1
+func game_over():	
+	$Deathsound.play()
 	print("game over!")
 	print("Score: " + str(score))
 	var segments = get_tree().get_nodes_in_group("segments")
