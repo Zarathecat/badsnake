@@ -22,7 +22,7 @@ color = Color(0.206383, 0.0569695, 0.184505, 1)
 [node name="Food" parent="." instance=ExtResource("2_6b8jg")]
 
 [node name="Segment" parent="." instance=ExtResource("2_yjprj")]
-position = Vector2(133, 49)
+position = Vector2(-41, 35)
 
 [node name="Head" parent="." instance=ExtResource("4_qd7gk")]
 script = ExtResource("5_lohqq")

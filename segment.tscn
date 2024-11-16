@@ -7,7 +7,7 @@ size = Vector2(10, 10)
 radius = 4.10577
 
 [node name="Segment" type="Area2D"]
-position = Vector2(145, 28)
+position = Vector2(21, 29)
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

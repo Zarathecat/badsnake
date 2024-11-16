@@ -16,10 +16,6 @@ var window_size = DisplayServer.window_get_size()
 # I was thinking 'is there food?'
 var food_flag = true # hack
 
-# grow_flag says whether or not the snake should grow on
-# this frame or not.
-var grow_flag = false
-
 # eat flag signals that the snake has had some food
 # used to trigger the snake's growth, score update etc
 var eat_flag = false
@@ -33,14 +29,6 @@ var immortal_flag = false
 # Self-explanatory. Says it's time for the snake to die.
 var death_flag = false
 
-# There's probably no reason to have both a snake_array and
-# segments. This happened because I found out you could get
-# a group of nodes after I'd coded it using an array. Maybe
-# in the future I'll fix the implementation to use only the
-# segments. That might also fix an annoying bug where they
-# get out of sync, the code tries to access an invalid index,
-# and the snake takes that as its cue to suddenly die.
-var snake_array = []
 var segments
 
 @export var food_scene: PackedScene
@@ -49,6 +37,8 @@ var segments
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	immortal_flag = true
+	$LunchTimer.start() # Hack to avoid starting the game with a gameover
 	$Segment.add_to_group("segments")
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -68,32 +58,32 @@ func _process(delta: float) -> void:
 		grow_snake()
 		eat_flag = false
 		
-	var snake_length = snake_array.size()
 	# Right, let's talk about how you write snake.
-	# This implementation represents the snake as an array of coordinate pairs.
+	# This implementation represents the snake as an array of segments.
+	# Each segment is an object with a coordinate pair, 'position'.
 	# You have as many pairs as the length of the snake. On each loop,
-	# it checks, 'is the snake head in a different position to anything
-	# else in the array?' If so, it adds the head to the end of the array,
-	# and removes the first element. If not, it keeps the array the same,
-	# because otherwise, the snake would have multiple segments at the same
-	# coordinate, so it would look like it had shrunk. This isn't as visible
-	# on implementations where the snake is always moving, but is visible if
-	# the player can stop the snake. You could use that as a gameplay mechanic,
-	# if you wanted, but I don't want.
-	# So usually, it adds a new pair of coordinates to the end of the array,
-	# and removes the oldest pair from the start. Unless it has just eaten
-	# some food! Then, it adds a new pair to the end, but also keeps the oldest
-	# pair. It then sets a flag, so that it only grows once per food item.
-	# First time it runs, put the head coord as only element in array
-	if snake_array == []:
-		snake_array.push_back($Head.position) # push_back == append
+	# this checks, 'is the last (newest) thing in the array in a different
+	# position to the snake head?' (ie: has the snake moved?)
+	# If so, it shifts the position of each segment, starting from the 
+	# oldest, the tail (first in the array!), to take the place of the
+	# segment ahead of it. And the first segment takes the place of the
+	# head.
+	# If the snake has not moved, the segments stay where they are.
+	# We used to use all sorts of horrible flags, but now segment-creation
+	# is handled elsewhere, so the logic here doesn't need to chagne.
+	var segments = get_tree().get_nodes_in_group("segments")
+	var snake_length = segments.size()
+	if segments == []:
+		pass
 	# If last thing in array doesn't match head
-	elif snake_array[snake_length-1] != $Head.position:
-		snake_array.push_back($Head.position)
-		if grow_flag == false:
-			snake_array.pop_front()
-		grow_flag = false
-	make_snake()
+	elif segments[-1].position != $Head.position:
+		# move segments along by 1
+		for i in range(0, snake_length-1):
+			#print(segments[i].position)#debug
+			segments[i].position = segments[i+1].position
+		segments[-1].position = $Head.position
+	else:
+		pass
 	check_snake($Head.position[0], $Head.position[1])
 	if death_flag == true:
 		print("I hit something!")
@@ -105,39 +95,16 @@ func check_snake(a, b):
 		print("hit wall!")
 		death_flag = true
 	
-# This matches the nodes for the snake segments to the coordinates
-# in the array. It would likely make more sense to set their positions
-# directly and operate on them that way.
-func make_snake():
-	var segments = get_tree().get_nodes_in_group("segments")
-	if snake_array != [] and segments.size() > 0:
-		# working around a bug where they get emptied after check
-		# I don't think this workaround actually works, so it just
-		# pointlessly duplicates some arrays and slows things down.
-		var seg_dup = segments.duplicate()
-		var sn_dup = snake_array.duplicate()
-		# Sometimes the sizes of these mismatch and it errors
-		# out, reason as yet unknown, but unsurprising given the
-		# spaghetti. Maybe operating directly on segments will fix bug
-		for i in range(seg_dup.size()):
-			seg_dup[i].position = sn_dup[i-1]
-		segments = seg_dup
 
 # Add a segment to the snake, and thus to the scene tree. Track it in the
 # list of segment nodes. The position here is its starting position; after
-# this one-off it will be set by the game loop. We give it a specific position
-# here so we 'grow' instantly and don't bump into it by accident, but since
-# apparently I ended up needing a bunch of hacky flags anyway, it
-# might make more sense to instantiate the segment offscreen and then have
-# it join the snake on the first loop...
+# this one-off it will be set by the game loop. We instantiate the segment
+# offscreen and then have it join the snake on the first loop, so we don't
+# hit it.
 func grow_snake():
-	grow_flag = true
 	var segment = segment_scene.instantiate()
-	# Bug workaround. Shouldn't ever be empty here but sometimes it is...
-	if snake_array == []:
-		segment.position = $Head.position
-	else:
-		segment.position = snake_array[0]
+	var segments = get_tree().get_nodes_in_group("segments")
+	segment.position = Vector2(window_size.x + 50, window_size.y +50) # hack
 	add_child(segment)
 	segment.add_to_group("segments")
 	
@@ -155,12 +122,13 @@ func get_random_position(win_size):
 # the snake will eat exactly one piece of food and then ignore it
 # from then on!
 func make_food():
+	var segments = get_tree().get_nodes_in_group("segments")
 	var food = food_scene.instantiate()
 	var potential_food_pos = Vector2(0,0)
 	# Hack. loop until get position not taken by snake
 	while true:
 		potential_food_pos = get_random_position(window_size)
-		if potential_food_pos not in snake_array:
+		if potential_food_pos not in segments:
 			break
 	food.position = potential_food_pos
 	food.area_entered.connect(_on_food_area_entered)
@@ -180,7 +148,6 @@ func game_over():
 	var segments = get_tree().get_nodes_in_group("segments")
 	for segment in segments:
 		segment.queue_free()
-	snake_array = []
 	$Head.position = window_size /2
 	$Head.last_dir = ""
 	score = 0
