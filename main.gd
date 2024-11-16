@@ -20,11 +20,18 @@ var food_flag = true # hack
 # this frame or not.
 var grow_flag = false
 
-# eat_flag says whether or not the snake has just eaten.
+# eat flag signals that the snake has had some food
+# used to trigger the snake's growth, score update etc
+var eat_flag = false
+
+# immortal_flag is set when the snake has *just* eaten.
 # This is used as a workaround to disable collision-detection
 # for the snake with its new segment when it first gets it,
 # so it doesn't instantly die by growing
-var eat_flag = false # hack
+var immortal_flag = false
+
+# Self-explanatory. Says it's time for the snake to die.
+var death_flag = false
 
 # There's probably no reason to have both a snake_array and
 # segments. This happened because I found out you could get
@@ -49,7 +56,18 @@ func _process(delta: float) -> void:
 	if food_flag == false:
 		food_flag = true
 		make_food()
-
+	
+	# If snake has just eaten some food	
+	if eat_flag == true:
+		print("ate food!")
+		$LunchTimer.start()
+		score += 1
+		print("Score: " + str(score))
+		$Food.destroy_food()
+		food_flag = false
+		grow_snake()
+		eat_flag = false
+		
 	var snake_length = snake_array.size()
 	# Right, let's talk about how you write snake.
 	# This implementation represents the snake as an array of coordinate pairs.
@@ -77,12 +95,15 @@ func _process(delta: float) -> void:
 		grow_flag = false
 	make_snake()
 	check_snake($Head.position[0], $Head.position[1])
+	if death_flag == true:
+		print("I hit something!")
+		game_over()
 
 # Check if snake hit wall
 func check_snake(a, b):
 	if a == 500 or a == 0 or b == 500 or b == 0:
 		print("hit wall!")
-		game_over()
+		death_flag = true
 	
 # This matches the nodes for the snake segments to the coordinates
 # in the array. It would likely make more sense to set their positions
@@ -111,7 +132,6 @@ func make_snake():
 # it join the snake on the first loop...
 func grow_snake():
 	grow_flag = true
-	eat_flag = true # hack
 	var segment = segment_scene.instantiate()
 	# Bug workaround. Shouldn't ever be empty here but sometimes it is...
 	if snake_array == []:
@@ -120,7 +140,6 @@ func grow_snake():
 		segment.position = snake_array[0]
 	add_child(segment)
 	segment.add_to_group("segments")
-
 	
 # Gets a random position on the screen, used for placing the food.
 func get_random_position(win_size):
@@ -151,37 +170,39 @@ func make_food():
 # snake segments. Should probably look into whether it's wise to
 # be using get_tree() in both the make and destroy functions;
 # maybe they can get out of step. Anyway. We also clear the array.
+# Some of this stuff needs splitting out and abstracting. Later!
 func game_over():
 	if death_counter % 10 == 0:
 		$Deathsound.play()
 	death_counter += 1
 	print("game over!")
+	print("Score: " + str(score))
 	var segments = get_tree().get_nodes_in_group("segments")
 	for segment in segments:
 		segment.queue_free()
 	snake_array = []
+	$Head.position = window_size /2
+	$Head.last_dir = ""
+	score = 0
+	death_flag = false # auto-restart
 
-# eat_flag is used here as a hack for turning off
+# immortal_flag is used here as a hack for turning off
 # collision-detection briefly, so the snake won't die if it's lunching.
 func _on_head_area_entered(area: Area2D) -> void:
-	if eat_flag == true:
-		eat_flag = false
+	if immortal_flag == true:
+		pass
 	else:
-		print("I hit myself!")
-		game_over()
+		death_flag = true # moving death out of event
+		#print("I hit myself!") # debugging
 
 # We disable collision-detection so that the snake only eats one
 # item of food, and the score doesn't skyrocket. 
 # We never bother to enable it again, because we then destroy the
-# item of food. The call_deferred() further down averts an
-# error that the debugger draws attention to, but which doesn't
-# seem to have any effect on gameplay. May as well.
-# food_flag = false informs the game that there is 
-# no food on the screen.
+# item of food.
 func _on_food_area_entered(area: Area2D) -> void:
 	$Food/CollisionShape2D.set_deferred(&"disabled", true)
-	score += 1
-	print("ate food!")
-	$Food.destroy_food()
-	grow_snake.call_deferred()
-	food_flag = false
+	eat_flag = true
+	immortal_flag = true
+	
+func _on_lunch_timer_timeout() -> void:
+	immortal_flag = false

@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://cdc01awn2mvdb"]
+[gd_scene load_steps=6 format=3 uid="uid://cdc01awn2mvdb"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_6wsbv"]
 [ext_resource type="PackedScene" uid="uid://bdo1b4k5x7ugk" path="res://food.tscn" id="2_6b8jg"]
 [ext_resource type="PackedScene" uid="uid://cehq7g6upquki" path="res://segment.tscn" id="2_yjprj"]
 [ext_resource type="PackedScene" uid="uid://bfu5hsndt7v6a" path="res://head.tscn" id="4_qd7gk"]
 [ext_resource type="Script" path="res://head.gd" id="5_lohqq"]
-[ext_resource type="AudioStream" uid="uid://c41kadt706p0w" path="res://art/snakedeath.ogg" id="6_p4tq1"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_6wsbv")
@@ -33,8 +32,12 @@ script = ExtResource("5_lohqq")
 [node name="Bgm" type="AudioStreamPlayer" parent="."]
 
 [node name="Deathsound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("6_p4tq1")
+
+[node name="LunchTimer" type="Timer" parent="."]
+wait_time = 0.193
+one_shot = true
 
 [connection signal="area_entered" from="Food" to="." method="_on_food_area_entered" flags=3]
 [connection signal="area_shape_entered" from="Food" to="." method="_on_food_area_shape_entered"]
 [connection signal="area_entered" from="Head" to="." method="_on_head_area_entered"]
+[connection signal="timeout" from="LunchTimer" to="." method="_on_lunch_timer_timeout"]
