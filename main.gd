@@ -4,11 +4,6 @@ var score = 0
 
 var window_size = DisplayServer.window_get_size()
 
-# food_flag is used to track whether we need to make food.
-# confusingly, 'false' means we need to make food. I guess
-# I was thinking 'is there food?'
-var food_flag = true # hack
-
 # eat flag signals that the snake has had some food
 # used to trigger the snake's growth, score update etc
 var eat_flag = false
@@ -34,17 +29,14 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if food_flag == false:
-		food_flag = true
-		make_food()
-	
+
 	# If snake has just eaten some food	
 	if eat_flag == true:
 		print("ate food!")
 		$LunchTimer.start()
 		score += 1
 		print("Score: " + str(score))
-		food_flag = false #Flag avoids make/destroy_food race condition.
+		make_food()
 		grow_snake()
 		eat_flag = false
 		
@@ -67,10 +59,15 @@ func _process(delta: float) -> void:
 		pass
 	# If last thing in array doesn't match head
 	elif segments[-1].position != $Head.position:
-		# move segments along by 1
+		# Re-enable collision detection for ex-first-segment, now 2nd
+		if segments.size() > 1:
+			segments[-2].get_node("CollisionShape2D").disabled = false
 		for i in range(0, snake_length-1):
-			#print(segments[i].position)#debug
+			# Move each segment along by 1
 			segments[i].position = segments[i+1].position
+		# When the head updates too slowly, the first segment crashes
+		# into it. So collision detection for the first segment should
+		# always be disabled.
 		segments[-1].position = $Head.position
 	check_snake($Head.position[0], $Head.position[1])
 	if death_flag == true:
@@ -93,6 +90,9 @@ func grow_snake():
 	var segment = segment_scene.instantiate()
 	var segments = get_tree().get_nodes_in_group("segments")
 	segment.position = Vector2(window_size.x + 50, window_size.y +50) # hack
+	# The new node can't detect collisions, so that it doesn't hit the head
+	# when the head is slow to update its own position.
+	segment.get_node("CollisionShape2D").disabled = true
 	add_child(segment)
 	segment.add_to_group("segments")
 	
