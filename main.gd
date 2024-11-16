@@ -30,6 +30,7 @@ func _ready() -> void:
 	immortal_flag = true
 	$LunchTimer.start() # Hack to avoid starting the game with a gameover
 	$Segment.add_to_group("segments")
+	food_scene.instantiate()
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -43,7 +44,6 @@ func _process(delta: float) -> void:
 		$LunchTimer.start()
 		score += 1
 		print("Score: " + str(score))
-		$Food.destroy_food()
 		food_flag = false #Flag avoids make/destroy_food race condition.
 		grow_snake()
 		eat_flag = false
@@ -106,12 +106,8 @@ func get_random_position(win_size):
 	var rand_pos_y = randi_range(wbuffer, win_y)
 	return Vector2(rand_pos_x, rand_pos_y)
 
-# Remember to connect the signal from the new piece of food, or
-# the snake will eat exactly one piece of food and then ignore it
-# from then on!
 func make_food():
 	var segments = get_tree().get_nodes_in_group("segments")
-	var food = food_scene.instantiate()
 	var potential_food_pos = Vector2(0,0)
 	# Hack. loop until get position not taken by snake
 	var seg_pos_array = []
@@ -121,9 +117,8 @@ func make_food():
 		potential_food_pos = get_random_position(window_size)
 		if potential_food_pos not in seg_pos_array:
 			break
-	food.position = potential_food_pos
-	food.area_entered.connect(_on_food_area_entered)
-	add_child(food)
+	$Food.position = potential_food_pos
+	$Food/CollisionShape2D.set_deferred(&"disabled", false)
 
 # queue_free() removes objects from memory. So this destroys all
 # snake segments. We set the snake to
