@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 		score += 1
 		print("Score: " + str(score))
 		$Food.destroy_food()
-		food_flag = false
+		food_flag = false #Flag avoids make/destroy_food race condition.
 		grow_snake()
 		eat_flag = false
 		
