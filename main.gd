@@ -8,6 +8,10 @@ var score = 0
 var window_size = DisplayServer.window_get_size()
 
 # Self-explanatory. Says it's time for the snake to die.
+# We use a flag for this so that the listener checking for collisions
+# doesn't end up with too much to process. It can just set
+# a flag and go back to listening. There can be many collisions
+# in quick succession, so this stops it getting overwhelmed.
 var death_flag = false
 
 # immortal_flag was used to disable collision-detection.
