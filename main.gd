@@ -115,7 +115,7 @@ func make_food():
 func game_over():	
 	$Deathsound.play()
 	print("game over!")
-	print("Score: " + str(score))
+	update_score_display()
 	var segments = get_tree().get_nodes_in_group("segments")
 	for segment in segments:
 		segment.queue_free()
@@ -123,6 +123,9 @@ func game_over():
 	$Head.last_dir = ""
 	score = 0
 	death_flag = false # auto-restart
+
+func update_score_display():
+	$Hud/Score.text = "Score: " + str(score)
 
 func _on_head_area_entered(area: Area2D) -> void:
 	death_flag = true
@@ -132,9 +135,8 @@ func _on_head_area_entered(area: Area2D) -> void:
 # item of food, and the score doesn't skyrocket. 
 func _on_food_area_entered(area: Area2D) -> void:
 	$Food/CollisionShape2D.set_deferred(&"disabled", true)
-	print("ate food!")
 	score += 1
-	print("Score: " + str(score))
+	update_score_display()
 	make_food()
 	grow_snake()
 	

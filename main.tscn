@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdc01awn2mvdb"]
+[gd_scene load_steps=7 format=3 uid="uid://cdc01awn2mvdb"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_6wsbv"]
 [ext_resource type="PackedScene" uid="uid://bdo1b4k5x7ugk" path="res://food.tscn" id="2_6b8jg"]
 [ext_resource type="PackedScene" uid="uid://cehq7g6upquki" path="res://segment.tscn" id="2_yjprj"]
 [ext_resource type="PackedScene" uid="uid://bfu5hsndt7v6a" path="res://head.tscn" id="4_qd7gk"]
 [ext_resource type="Script" path="res://head.gd" id="5_lohqq"]
+[ext_resource type="Script" path="res://hud.gd" id="6_blstu"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_6wsbv")
@@ -28,6 +29,14 @@ position = Vector2(-41, 35)
 script = ExtResource("5_lohqq")
 
 [node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("6_blstu")
+
+[node name="Score" type="Label" parent="Hud"]
+offset_left = 316.0
+offset_top = 5.0
+offset_right = 385.0
+offset_bottom = 48.0
+text = "SCORE: 0"
 
 [node name="Bgm" type="AudioStreamPlayer" parent="."]
 
