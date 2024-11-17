@@ -1,0 +1,26 @@
+DAY 2 II
+
+This wasn't a 'real' hackweek day, since it was the weekend, but I
+was idly thinking about this snake, and how daft the implementation
+was for various things. So I decided to just fix one doofy detail...
+and another... and another...
+
+I think the game-breaking bug is gone now. But maybe there are more,
+just waiting to be discovered!
+
+Since it seems like it works, now, though, I might actually try to
+make it pretty, sometime. I did intend to put the score on the
+screen, make nice music for it, make it possible to pause...
+
+I'm still not clear on the 'right' way to scale sprites. They seem
+to behave differently depending on whether you drag the corners of
+the outline in the 2D screen, use the 'scale' tool, or set things
+in the Inspector tab. Scaling the node itself seems to mess with
+collision-detection, etc, presumably because it scales the
+CollsionShape2D up to match. So you want to enter the .tscn and
+change things there. But beyond that, I don't yet understand the
+logic. Afaict, usually what I want to do is drag the corners of
+the shape in the 2D pane. That seems to end up with the right
+behaviour. But I should look into *why*, sometime.
+
+(I did put the score on the screen, in the end. Was quick.)
