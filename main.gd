@@ -7,7 +7,7 @@ var score = 0
 
 var window_size = DisplayServer.window_get_size()
 
-# Self-explanatory. Says it's time for the snake to die.
+# Says it's time for the snake to die.
 # We use a flag for this so that the listener checking for collisions
 # doesn't end up with too much to process. It can just set
 # a flag and go back to listening. There can be many collisions
@@ -30,27 +30,33 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 		
-	# Right, let's talk about how you write snake.
+	# Here's how you move snake.
 	# This implementation represents the snake as an array of segments.
 	# Each segment is an object with a coordinate pair, 'position'.
-	# You have as many pairs as the length of the snake. On each loop,
-	# this checks, 'is the last (newest) thing in the array in a different
+	# You have as many pairs as the length of the snake. The newest
+	# segment goes at the end, followed by the head.
+	# With values taken out, it's shaped like this:
+	# [x,x,x,x,x]X   ('x' represents a segment, 'X' the head)
+	# ----------->   (here, it's moving this way!)
+	# So the oldest segment, the tail, is first in the array, index 0.
+	# And the newest segment, just behind the head, is at segments[-1].
+	# Each loop, we check:
+	# 'is the last (newest) thing in the array in a different
 	# position to the snake head?' (ie: has the snake moved?)
 	# If so, it shifts the position of each segment, starting from the 
 	# oldest, the tail (first in the array!), to take the place of the
-	# segment ahead of it. And the first segment takes the place of the
-	# head.
+	# segment ahead of it. And the newest segment takes the head's place.
 	# If the snake has not moved, the segments stay where they are.
-	# We used to use all sorts of horrible flags, but now segment-creation
-	# is handled elsewhere, so the logic here doesn't need to chagne.
+	# This stops it from shrinking on implementations where the snake
+	# can stop.
 	var segments = get_tree().get_nodes_in_group("segments")
 	var snake_length = segments.size()
 	if segments == []:
 		pass
 	# If last thing in array doesn't match head
 	elif segments[-1].position != $Head.position:
-		# Re-enable collision detection for ex-first-segment, now 2nd
 		if segments.size() > 1:
+			# Re-enable collision detection for ex-newest segment
 			segments[-2].get_node("CollisionShape2D").disabled = false
 		for i in range(0, snake_length-1):
 			# Move each segment along by 1 place
@@ -64,7 +70,7 @@ func _process(delta: float) -> void:
 		print("I hit something!")
 		game_over()
 
-# Check if snake hit wall
+# Check if snake hit wall. a and b are the X and Y coords of the head.
 func check_snake(a, b):
 	if a == window_size.x or a == 0 or b == window_size.y or b == 0:
 		print("hit wall!")
