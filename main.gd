@@ -1,23 +1,20 @@
 extends Node
 
+@export var food_scene: PackedScene
+@export var segment_scene: PackedScene
+
 var score = 0
 
 var window_size = DisplayServer.window_get_size()
 
-# eat flag signals that the snake has had some food
-# used to trigger the snake's growth, score update etc
-var eat_flag = false
+# Self-explanatory. Says it's time for the snake to die.
+var death_flag = false
 
 # immortal_flag was used to disable collision-detection.
 # No longer needed, but kept around as a comment in case
 # we reintroduce it as a powerup sometime
 #var immortal_flag = false
 
-# Self-explanatory. Says it's time for the snake to die.
-var death_flag = false
-
-@export var food_scene: PackedScene
-@export var segment_scene: PackedScene
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -28,15 +25,6 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-
-	# If snake has just eaten some food	
-	if eat_flag == true:
-		print("ate food!")
-		score += 1
-		print("Score: " + str(score))
-		make_food()
-		grow_snake()
-		eat_flag = false
 		
 	# Right, let's talk about how you write snake.
 	# This implementation represents the snake as an array of segments.
@@ -144,7 +132,11 @@ func _on_head_area_entered(area: Area2D) -> void:
 # item of food, and the score doesn't skyrocket. 
 func _on_food_area_entered(area: Area2D) -> void:
 	$Food/CollisionShape2D.set_deferred(&"disabled", true)
-	eat_flag = true
+	print("ate food!")
+	score += 1
+	print("Score: " + str(score))
+	make_food()
+	grow_snake()
 	
 #func _on_lunch_timer_timeout() -> void:
 #	immortal_flag = false
