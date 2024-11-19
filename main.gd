@@ -49,6 +49,19 @@ func _process(delta: float) -> void:
 	# If the snake has not moved, the segments stay where they are.
 	# This stops it from shrinking on implementations where the snake
 	# can stop.
+	# (A more elegant implementation would hardcode a few collisionless
+	# segments behind the head, so the snake starts with a length, use
+	# one ringbuffer for those, and then use another
+	# ringbuffer for the remaining segments. So the snakebody would be in
+	# two sections. New segments would be added to the tail of 
+	# their section (start of their section's array!), and on each loop,
+	# the end-tail segment of the section
+	# would loop round to the start of the tail (end of array).
+	# This would reduce calls to set collision-detection
+	# and involve less processing in general, since most array-elements
+	# would remain untouched, instead up of updating all of them per loop.
+	# BUT you would not be able to zoom around the screen as a little
+	# red blob. All technological advances have their tradeoffs.)
 	var segments = get_tree().get_nodes_in_group("segments")
 	var snake_length = segments.size()
 	if segments == []:
